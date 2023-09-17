@@ -1,17 +1,19 @@
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
-import { Configuration, OpenAIApi } from "openai";
+import { OpenAI } from "openai";
 import { google, youtube_v3 } from "googleapis";
 
-import { env } from "node:process";
+import dotenv from "dotenv";
 
-console.log("env", env.YOUTUBE_API_KEY);
-const configuration = new Configuration({
+dotenv.config();
+const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 const youtube = google.youtube({
+  headers: {
+    "referrer": "localhost",
+  },
   version: "v3",
   auth: process.env.YOUTUBE_API_KEY,
 });
@@ -67,11 +69,16 @@ app.get("/videos/:videoId", async (req: Request, res: Response) => {
 
     // Generate a summary using OpenAI
     const inputText = `${videoDetails.title}. ${videoDetails.description}`;
-    const completion = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: inputText,
-      max_tokens: 100,
-    });
+    const completion = await openai.completions.create(
+    // const completion = await openai.chat.completions.create({
+      {
+        model: "davinci-002",
+        prompt: inputText,
+        max_tokens: 100,
+      }
+    )
+
+    console.log('model', completion.object, completion.created, completion.id);
 
     // Fetch video transcript using OpenAI
     // const transcription = await openai.transcriptions.create({
@@ -103,6 +110,6 @@ function processTranscription(transcription: any) {
 }
 
 // Start the server
-app.listen(3000, () => {
+app.listen(PORT, () => {
   console.log("Server is running on port 3000");
 });
