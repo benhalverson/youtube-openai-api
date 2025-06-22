@@ -63,6 +63,8 @@ app.get("/videos/:videoId", async (req: Request, res: Response) => {
     // Extract video content details
     const videoContentDetails =
       videoContentResponse?.data?.items?.[0]?.contentDetails;
+    
+    console.log('videoContentDetails', videoContentDetails)
 
     const videoSummary =  processVideoDescription(videoDetails.description ?? "");
     console.log('video Summary', videoSummary);
@@ -111,8 +113,8 @@ async function processAudio(audio: string) {
     file: fs.createReadStream(`${__dirname}/audio/${audio}`),
     temperature: 0
   });  
-  console.log('transcription', transcription.text)
-  return transcription.text;
+  console.log('transcription', transcription)
+  return transcription;
   } catch (error) {
    console.error("Error processing audio", error); 
   }
