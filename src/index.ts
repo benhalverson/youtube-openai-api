@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import fs from 'fs';
 import bodyParser from "body-parser";
 import { OpenAI } from "openai";
 import { google, youtube_v3 } from "googleapis";
@@ -41,19 +42,14 @@ app.get("/videos/:videoId", async (req: Request, res: Response) => {
       {}
     );
 
-    console.log(
-      "videoResponse title",
-      videoResponse?.data?.items?.[0]?.snippet?.title
-    );
-    console.log(
-      "videoResponse description",
-      videoResponse?.data?.items?.[0]?.snippet?.description
-    );
-    console.log("youtube id", videoResponse?.data?.items?.[0]?.id);
-    console.log(
-      "youtube channel id",
-      videoResponse?.data?.items?.[0]?.snippet?.channelId
-    );
+    
+    console.log('response url', videoResponse.request.responseURL);
+    
+    const description = videoResponse?.data?.items?.[0]?.snippet?.description;
+    const tags = videoResponse?.data?.items?.[0]?.snippet?.tags;
+    const thumbnail = videoResponse?.data?.items?.[0]?.snippet?.thumbnails?.standard?.url;
+    const otherVideoId = videoResponse?.data?.items?.[0]?.id;
+
     // Fetch video content from YouTube API
     const videoContentResponse = await youtube.videos.list({
       part: ["contentDetails"],
@@ -63,36 +59,20 @@ app.get("/videos/:videoId", async (req: Request, res: Response) => {
     // Extract video details
     const videoDetails = videoResponse?.data?.items?.[0]?.snippet ?? {};
 
+    
     // Extract video content details
     const videoContentDetails =
       videoContentResponse?.data?.items?.[0]?.contentDetails;
 
-    // Generate a summary using OpenAI
-    const inputText = `${videoDetails.title}. ${videoDetails.description}`;
-    const completion = await openai.completions.create(
-    // const completion = await openai.chat.completions.create({
-      {
-        model: "davinci-002",
-        prompt: inputText,
-        max_tokens: 100,
-      }
-    )
-
-    console.log('model', completion.object, completion.created, completion.id);
-
-    // Fetch video transcript using OpenAI
-    // const transcription = await openai.transcriptions.create({
-    //   audio: `https://www.youtube.com/watch?v=${videoId}`,
-    // });
-
-    // // Process the transcript and generate a summary
-    // const summary = processTranscription(transcription);
-
-    // Send the response
+    const videoSummary =  processVideoDescription(videoDetails.description ?? "");
+    console.log('video Summary', videoSummary);
     res.json({
       title: videoDetails.title,
       description: videoDetails.description,
-      // summary,
+      tags: tags,
+      thumbnail: thumbnail,
+      otherDescription: description,
+      otherVideoId: otherVideoId,
     });
   } catch (error) {
     console.error("Error:", error);
@@ -100,13 +80,42 @@ app.get("/videos/:videoId", async (req: Request, res: Response) => {
   }
 });
 
-// Helper function to process the transcript and generate a summary
-function processTranscription(transcription: any) {
-  // Implement your logic here to process the transcription and generate a summary
-  // You can utilize OpenAI's language model or other summarization techniques
+// Helper function to process the video description
+async function processVideoDescription(transcription: string) {
+  try {
+    const summary = await openai.chat.completions.create({
+      model: "gpt-4-turbo",
+      messages: [{
+        role: 'system',
+        content: `You are a helpful assistant that can parse and summarize video descriptions.`
+      }, {
+        role: 'user',
+        content: `Summarize this transcription succinctly: \n ${transcription}`
+      }],
 
-  // Example: Return the first 100 characters as the summary
-  return transcription.text.substring(0, 100);
+    });
+    return summary.choices[0].message.content;
+  } catch (error) {
+    console.error("Error:", error);
+    return "An error occurred";
+  }
+}
+
+// helper function to transcribe audio with OpenAI whisper.
+async function processAudio(audio: string) {
+  try {
+  // Transcribe audio with OpenAI whisper
+  const transcription = await openai.audio.transcriptions.create({
+    model: "whisper",
+    response_format: "text",
+    file: fs.createReadStream(`${__dirname}/audio/${audio}`),
+    temperature: 0
+  });  
+  console.log('transcription', transcription.text)
+  return transcription.text;
+  } catch (error) {
+   console.error("Error processing audio", error); 
+  }
 }
 
 // Start the server
