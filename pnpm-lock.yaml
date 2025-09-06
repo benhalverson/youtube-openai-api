@@ -25,7 +25,7 @@ importers:
         version: 150.0.1
       openai:
         specifier: ^5.6.0
-        version: 5.6.0
+        version: 5.19.1
     devDependencies:
       '@types/body-parser':
         specifier: ^1.19.2
@@ -425,8 +425,8 @@ packages:
   once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
 
-  openai@5.6.0:
-    resolution: {integrity: sha512-jNH5z+hYAdOMZXyEt0yZ7246s+UZjg2AwFQqkAhZIPPjxNtHHO5mykOefau6FkOqj16aC94MOdJl/rZBcKj/cQ==}
+  openai@5.19.1:
+    resolution: {integrity: sha512-zSqnUF7oR9ksmpusKkpUgkNrj8Sl57U+OyzO8jzc7LUjTMg4DRfR3uCm+EIMA6iw06sRPNp4t7ojp3sCpEUZRQ==}
     hasBin: true
     peerDependencies:
       ws: ^8.18.0
@@ -984,7 +984,7 @@ snapshots:
     dependencies:
       wrappy: 1.0.2
 
-  openai@5.6.0: {}
+  openai@5.19.1: {}
 
   parseurl@1.3.3: {}
 
