@@ -10,7 +10,7 @@ importers:
     dependencies:
       axios:
         specifier: ^1.4.0
-        version: 1.10.0
+        version: 1.10.0(debug@4.4.1)
       body-parser:
         specifier: ^2.2.0
         version: 2.2.0
@@ -25,7 +25,7 @@ importers:
         version: 150.0.1
       openai:
         specifier: ^5.6.0
-        version: 5.6.0
+        version: 5.23.2
     devDependencies:
       '@types/body-parser':
         specifier: ^1.19.2
@@ -425,8 +425,8 @@ packages:
   once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
 
-  openai@5.6.0:
-    resolution: {integrity: sha512-jNH5z+hYAdOMZXyEt0yZ7246s+UZjg2AwFQqkAhZIPPjxNtHHO5mykOefau6FkOqj16aC94MOdJl/rZBcKj/cQ==}
+  openai@5.23.2:
+    resolution: {integrity: sha512-MQBzmTulj+MM5O8SKEk/gL8a7s5mktS9zUtAkU257WjvobGc9nKcBuVwjyEEcb9SI8a8Y2G/mzn3vm9n1Jlleg==}
     hasBin: true
     peerDependencies:
       ws: ^8.18.0
@@ -645,9 +645,9 @@ snapshots:
 
   asynckit@0.4.0: {}
 
-  axios@1.10.0:
+  axios@1.10.0(debug@4.4.1):
     dependencies:
-      follow-redirects: 1.15.9
+      follow-redirects: 1.15.9(debug@4.4.1)
       form-data: 4.0.3
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -798,7 +798,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  follow-redirects@1.15.9: {}
+  follow-redirects@1.15.9(debug@4.4.1):
+    optionalDependencies:
+      debug: 4.4.1
 
   form-data@4.0.3:
     dependencies:
@@ -984,7 +986,7 @@ snapshots:
     dependencies:
       wrappy: 1.0.2
 
-  openai@5.6.0: {}
+  openai@5.23.2: {}
 
   parseurl@1.3.3: {}
 
